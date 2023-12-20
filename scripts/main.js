@@ -27,8 +27,11 @@ class NoteBox extends HTMLElement {
     handle_mousedown(e) {
         this.is_dragging = true;
         const rect = this.getBoundingClientRect();
-        this.offsetX = e.clientX - rect.left;
-        this.offsetY = e.clientY - rect.bottom;
+        console.info("\n*** In handle_mousedown...\n");
+        console.table(rect);
+        this.offsetX = e.clientX - rect.x;
+        this.offsetY = e.clientY - rect.y;
+        console.table({'this.offsetX': this.offsetX, 'this.offsetY': this.offsetY, 'e.clientX': e.clientX, 'e.clientY': e.clientY});
         this.style.zIndex = ++NoteBox.#z_index;
         this.style.cursor = 'grabbing';
     }
@@ -36,11 +39,14 @@ class NoteBox extends HTMLElement {
     handle_mousemove(e) {
         if (!this.is_dragging) return;
         // This logic needs careful checking, as boxes can shift once mousemove starts.
+        console.info("\n*** In handle_mousemove...\n");
+        console.table({'this.offsetX': this.offsetX, 'this.offsetY': this.offsetY, 'e.clientX': e.clientX, 'e.clientY': e.clientY});
         const x = e.clientX - this.offsetX;
         const y = e.clientY - this.offsetY;
 
         this.style.left = `${x}px`;
         this.style.top = `${y}px`;
+        console.table({'this.style.left': this.style.left, 'this.style.top': this.style.top});
     }
 
     handle_mouseup() {
