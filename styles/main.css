@@ -1,37 +1,77 @@
-body {
-    display: grid;
-    grid-template-columns: 1fr;
-    grid-template-rows: 1fr 9fr;
-    margin: 0;
-    padding-top: 2vh;
-    padding-bottom: 2vh;
-    overflow: scroll;
-    background-color: #3cf;
+/*
+// Jit, An HTML/CSS template for a web page with sections
+// Author: John Lynch
+// Date: December 2023
+// File: jit/styles/main.css  
+*/
+* {
     box-sizing: border-box;
+    --bg-dark-col: #000;
+    --bright-col: #90c4ff;
+    --tblue: #00ffdd;
+    --hover-col: #ff4b00;
+    --body-bg-col: #010914;
+    --bright-text-col: #0084ff;
+    --warning-col: #ff4421;
+    --rich-dark-col: #701010;
+    text-decoration: none;
+}
+
+body, html {
+    padding: 0.5rem;
+    color: var(--bright-col);
+    background-color: var(--body-bg-col); 
     font-family: 'Courier New', Courier, monospace;
 }
 
-
-nav {
-    width: 80%;
-    margin: 0 auto;
-    text-align: center;
-    background-color: #9e3a00;
-    border-bottom: 2px solid #3cf;
-    color: #000;
-    border-radius: 9px;
+main {            
+    display: grid;
+    height: 100%;
+    grid-gap: 1vw;
+    justify-items: center;
+    align-items: stretch;
+    border: 1px ridge var(--tblue);
+    border-radius: 5px;
+    padding: 0.5vw;
+    grid-template-columns: 9fr 1fr;
+    grid-template-rows: 1fr 14fr;
+    background-color: var(--bg-dark-col);
 }
 
-main {
-    width: 80%;
-    height: 80vh;
-    margin: 0 auto;
-    /* padding: 2vw; */
-    /* text-align: center; */
-    background-color: #012;
-    border-radius: 9px;
+header {
+    grid-column: 1/-1;
+    grid-row: 1/1;
+    align-self: stretch;
+    justify-self: stretch;
 }
 
-h1 {
-    font-size: 2.4vw;
+#workspace {
+    grid-column: 1/1;
+    grid-row: 2/-1;
+    min-width:81vw;
+    min-height: 40vw;
+}
+
+#controls {
+    grid-column: 2/2;
+    grid-row: 2/-1;
+    min-width:9vw;
+    min-height: 40vw;
+}
+
+#name {
+    font-weight: normal;
+    border-bottom: 1px solid var(--tblue);
+    padding-top: 1.5vh;
+    color: var(--bright-text-col);
+    background-color: var(--body-bg-col);
+    font-size: 1.4vw;
+}
+
+#workspace, #controls {
+    border: 6px ridge var(--tblue);;
+    border-radius: 6px;
+    align-content: center;
+    justify-self: center;
+    justify-items: stretch;
 }

@@ -66,18 +66,18 @@ class NoteBox extends HTMLElement {
 
 customElements.define('note-box', NoteBox);
 for (title of titles) {
-    const main = document.querySelector('main');
+    const workspace = document.getElementById('workspace');
+    const workspace_rect = workspace.getBoundingClientRect();
     const item_list = Array(rand_in_range(2, 11)).fill(0).map(item => entries[rand_int(item_count)]);
     const note = new NoteBox(title, item_list);
     note.style.backgroundColor = colours[rand_int(colour_count)];
-    const main_rect = main.getBoundingClientRect();
+    workspace.appendChild(note);
     const note_rect = note.getBoundingClientRect();
-    const x0 = main_rect.x;
-    const x1 = x0 + main_rect.width - note_rect.width;
-    const y0 = main_rect.y;
-    const y1 = y0 + main_rect.height - note_rect.height;
+    const x0 = workspace_rect.x;
+    const x1 = x0 + workspace_rect.width - note_rect.width;
+    const y0 = workspace_rect.y;
+    const y1 = y0 + workspace_rect.height - note_rect.height;
     note.style.left = `${rand_in_range(x0, x1)}px`;
     note.style.top = `${rand_in_range(y0, y1)}px`;
-    main.appendChild(note);
     console.log(`Note ${title}: top left: (${note.style.left}, ${note.style.top}), width: ${note_rect.width}, height: ${note_rect.height}`);
 }
