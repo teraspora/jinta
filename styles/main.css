@@ -8,25 +8,28 @@ body {
     overflow: scroll;
     background-color: #3cf;
     box-sizing: border-box;
+    font-family: 'Courier New', Courier, monospace;
 }
 
 
 nav {
-    width: 80vw;
+    width: 80%;
     margin: 0 auto;
     text-align: center;
     background-color: #9e3a00;
     border-bottom: 2px solid #3cf;
     color: #000;
+    border-radius: 9px;
 }
 
 main {
-    width: 80vw;
+    width: 80%;
     height: 80vh;
     margin: 0 auto;
-    padding: 2vw;
-    text-align: center;
+    /* padding: 2vw; */
+    /* text-align: center; */
     background-color: #012;
+    border-radius: 9px;
 }
 
 h1 {
