@@ -1,0 +1,27 @@
+/* body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #3cf;
+}
+
+.draggable {
+    width: 100px;
+    height: 100px;
+    background-color: #3498db;
+    position: absolute;
+    cursor: grab;
+} */
+
+body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #3cf;
+        }
+        main {
+            width: 80vw;
+            height: 100vw;
+            margin: 0 auto;
+            padding: 2vw;
+            text-align: center;
+            background-color: #012;
+        }
