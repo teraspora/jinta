@@ -1,5 +1,5 @@
 class NoteBox extends HTMLElement {
-    static #z_index = 0;
+    static z_index = 0;
     constructor(title, items) {
         super();
         this.attachShadow({ mode: 'open' });
@@ -32,7 +32,7 @@ class NoteBox extends HTMLElement {
         this.offsetX = e.clientX - rect.x;
         this.offsetY = e.clientY - rect.y;
         console.table({'this.offsetX': this.offsetX, 'this.offsetY': this.offsetY, 'e.clientX': e.clientX, 'e.clientY': e.clientY});
-        this.style.zIndex = ++NoteBox.#z_index;
+        this.style.zIndex = ++NoteBox.z_index;
         this.style.cursor = 'grabbing';
     }
 
@@ -65,6 +65,8 @@ class NoteBox extends HTMLElement {
 }
 
 customElements.define('note-box', NoteBox);
+
+// For debugging, create a load of notes in random positions
 for (title of titles) {
     const workspace = document.getElementById('workspace');
     const workspace_rect = workspace.getBoundingClientRect();
@@ -95,16 +97,24 @@ new_note_button.addEventListener('click', event => {
     const create_button = div.querySelector('#create-note');
     [create_button, cancel_button].forEach(button => {
         button.addEventListener('click', event => {
-            debugger;
             console.log(event.target.id);
             switch(event.target.id) {
                 case 'cancel':
                     div.remove();
                     break;
-                case 'create-note':
-                    const data = new FormData(form);
-                    console.log(data.get('title'));
-                    break;
+                    case 'create-note':
+                        const data = new FormData(form);
+                        const title = data.get('title');
+                        const items = Array(6).fill(1).map((el, i) => data.get(`item_${i + 1}`)).filter(x => x);
+                        div.remove();
+                        console.log(title, items);
+                        const note = new NoteBox(title, items);
+                        note.style.backgroundColor = colours[rand_int(colour_count)];
+                        workspace.appendChild(note);
+                        note.style.left = `500px`;
+                        note.style.top = `400px`;
+                        note.style.zIndex = ++NoteBox.z_index;
+                        break;
                 default:
                     console.log(`Something else clicked - event targeted was ${event.target}.`);
             }
