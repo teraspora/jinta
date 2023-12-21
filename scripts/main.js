@@ -156,6 +156,20 @@ load_button.addEventListener('click', event => {
     console.log("Load button clicked.");
     const note_list = JSON.parse(localStorage.getItem('notes'));
     console.log(note_list);
+    const workspace = document.getElementById('workspace');
+    const workspace_rect = workspace.getBoundingClientRect();
+    for (const entry of note_list) {
+        const note = new NoteBox(entry.title, entry.items, entry.background_colour);
+        notes.push(note);
+        workspace.appendChild(note);
+        const note_rect = note.getBoundingClientRect();
+        const x0 = workspace_rect.x + 8;
+        const x1 = x0 + workspace_rect.width - note_rect.width - 8;
+        const y0 = workspace_rect.y + 8;
+        const y1 = y0 + workspace_rect.height - note_rect.height - 8;
+        note.style.left = `${rand_in_range(x0, x1)}px`;
+        note.style.top = `${rand_in_range(y0, y1)}px`;
+    }
 });
 
 const clear_all_button = document.getElementById('clear-all');
