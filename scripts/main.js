@@ -73,11 +73,41 @@ for (title of titles) {
     note.style.backgroundColor = colours[rand_int(colour_count)];
     workspace.appendChild(note);
     const note_rect = note.getBoundingClientRect();
-    const x0 = workspace_rect.x;
-    const x1 = x0 + workspace_rect.width - note_rect.width;
-    const y0 = workspace_rect.y;
-    const y1 = y0 + workspace_rect.height - note_rect.height;
+    const x0 = workspace_rect.x + 8;
+    const x1 = x0 + workspace_rect.width - note_rect.width - 8;
+    const y0 = workspace_rect.y + 8;
+    const y1 = y0 + workspace_rect.height - note_rect.height - 8;
     note.style.left = `${rand_in_range(x0, x1)}px`;
     note.style.top = `${rand_in_range(y0, y1)}px`;
     console.log(`Note ${title}: top left: (${note.style.left}, ${note.style.top}), width: ${note_rect.width}, height: ${note_rect.height}`);
 }
+
+const new_note_button = document.getElementById('new-note');
+new_note_button.addEventListener('click', event => {
+    console.log(`${event.target} clicked.`);
+    const template = document.getElementById('note-box-form');
+    const div = document.createElement('div');
+    div.appendChild(template.content.cloneNode(true));
+    div.classList.add('form-wrapper');
+    document.body.appendChild(div);
+    const form = div.querySelector('form');
+    const cancel_button = div.querySelector('#cancel');
+    const create_button = div.querySelector('#create-note');
+    [create_button, cancel_button].forEach(button => {
+        button.addEventListener('click', event => {
+            debugger;
+            console.log(event.target.id);
+            switch(event.target.id) {
+                case 'cancel':
+                    div.remove();
+                    break;
+                case 'create-note':
+                    const data = new FormData(form);
+                    console.log(data.get('title'));
+                    break;
+                default:
+                    console.log(`Something else clicked - event targeted was ${event.target}.`);
+            }
+        });
+    });
+});

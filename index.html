@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Jit</title>
+    <title>Jinta</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="A note app">
     <meta name="author" content="John Lynch">
@@ -21,7 +21,7 @@
                 border: 3px solid #0df;
                 border-radius: 9px;
                 padding: 10px;
-                background-color: #fa6;
+                color: #000;
                 user-select: none;
             }
         </style>
@@ -30,11 +30,26 @@
         <ul id="item-list"></ul>
     </template>
 
+    <template id="note-box-form">
+        <form id="new-note">
+            <label for="title">Subject</label>
+            <input type="text" id="title" name="title" required>
+            <hr>
+            <label for="list_items">List Items:</label>
+            <ul id="list_items" data-max-items="6">
+                <li><input type="text" name="item_1" placeholder="Item 1"></li>
+            </ul>
+    
+            <button type="button" id="create-note">Create</button>
+            <button type="button" id="cancel">Cancel</button>
+        </form>
+    </template>
+
     <main>
 
         <header>
             <div id="name">
-              <span>Jit</span>
+              <span>Jinta</span>
             </div> 
         </header>  
 
@@ -44,7 +59,7 @@
 
         
         <section id="controls">
-
+            <button id="new-note">New Note</button>
         </section> 
 
     </main>
