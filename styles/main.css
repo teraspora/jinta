@@ -8,7 +8,7 @@
     box-sizing: border-box;
     --bg-dark-col: #000;
     --bright-col: #90c4ff;
-    --tblue: #00ffdd;
+    --accent-col: #00ffdd;
     --hover-col: #ff4b00;
     --body-bg-col: #010914;
     --bright-text-col: #0084ff;
@@ -29,7 +29,7 @@ main {
     grid-gap: 1vw;
     justify-items: center;
     align-items: stretch;
-    border: 1px ridge var(--tblue);
+    border: 1px ridge var(--accent-col);
     border-radius: 5px;
     padding: 0.5vw;
     grid-template-columns: 9fr 1fr;
@@ -39,7 +39,7 @@ main {
 
 #name {
     font-weight: normal;
-    border-bottom: 1px solid var(--tblue);
+    border-bottom: 1px solid var(--accent-col);
     padding-top: 1.5vh;
     color: var(--bright-text-col);
     background-color: var(--body-bg-col);
@@ -49,14 +49,31 @@ main {
 button {
     width: 4vw;
     height: 2.4vw;
-    font-size: 1vw;
-    border: 1px solid #0084ff;
+    font-size: 0.8vw;
+    border: 2px solid var(--rich-dark-col);
     border-radius: 5px;
     font-weight: 600;
+    margin: 0.5vw;
 }
 
 button#new-note {
     background-color: #00ffdd;
+}
+
+button#save {
+    background-color: var(--bright-text-col);
+}
+
+button#random {
+    background-color: #ff5ecf;
+}
+
+button#load {
+    background-color: #fa3;
+}
+
+button#clear-all {
+    background-color: #ff2d5b;
 }
 
 button#create-note {
@@ -85,12 +102,21 @@ button#cancel {
     left: 40vw;
     top: 20vh;
     width:30vw;
-    height: 30vh;
+    height: auto;
     border: 3px solid #ffae00;
     border-radius: 5px;
     padding: 1vw;
     background-color: #ffd7b7;
     color: #000;
+}
+
+.form-wrapper input[type=text]{
+    width: 100%;
+    padding: 1vh 1vw;
+    margin: 8px 0;
+    border: 1px solid #000;
+    border-radius: 6px;
+    box-sizing: border-box;
 }
 
 header {
@@ -116,7 +142,7 @@ header {
 
 
 #workspace, #controls {
-    border: 6px ridge var(--tblue);;
+    border: 6px ridge var(--accent-col);;
     border-radius: 6px;
     align-content: center;
     justify-self: center;
