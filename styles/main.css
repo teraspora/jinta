@@ -54,7 +54,18 @@ button {
     border-radius: 5px;
     font-weight: 600;
     margin: 0.5vw;
+    transition: transform 0.5s;
+    box-shadow: 1px 1px #555;
 }
+
+button:hover {
+    transform: scale(1.05);
+}
+
+button:active {
+    box-shadow: 3px 3px #666;
+    transform: translate(3px, 3px);
+  }
 
 button#new-note {
     background-color: #00ffdd;

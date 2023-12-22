@@ -29,7 +29,7 @@ class NoteBox extends HTMLElement {
         this.addEventListener('mousedown', this.handle_mousedown.bind(this));
         document.addEventListener('mousemove', this.handle_mousemove.bind(this));
         document.addEventListener('mouseup', this.handle_mouseup.bind(this));
-        this.style.transition = 'opacity 1s ease-in-out';
+        this.style.transition = 'opacity 1s, transform 0.5s';
     }
 
     handle_mousedown(e) {
@@ -115,7 +115,7 @@ new_note_button.addEventListener('click', event => {
                         note.style.zIndex = ++NoteBox.z_index;
                         break;
                 default:
-                    console.log(`Something else clicked - event targeted was ${event.target}.`);
+                    console.log(`** Something else, not a button, was clicked - event targeted: ${event.target}.`);
             }
             set_notes_opacity(1.0);
         });
@@ -124,15 +124,14 @@ new_note_button.addEventListener('click', event => {
 
 const save_button = document.getElementById('save');
 save_button.addEventListener('click', event => {
-    console.log("Save button clicked.");
     const note_list = NoteBox.notes;
-    console.log(note_list);
     localStorage.setItem('notes', JSON.stringify(note_list));
+    console.log("** All notes saved.");
 });
 
 const random_button = document.getElementById('random');
 random_button.addEventListener('click', event => {
-    console.log("Random button clicked.");
+    console.log(`** Generating ${RANDOM_COUNT} random notes...`);
     const workspace = document.getElementById('workspace');
     const workspace_rect = workspace.getBoundingClientRect();
     const some_titles = Array(RANDOM_COUNT).fill(1).map(x => titles[rand_int(title_count)]);
@@ -153,10 +152,9 @@ random_button.addEventListener('click', event => {
 
 const load_button = document.getElementById('load');
 load_button.addEventListener('click', event => {
-    console.log("Load button clicked.");
     if (notes_str = localStorage.getItem('notes')) {
+        console.log("** Loading notes from Local Storage...");
         const note_list = JSON.parse(notes_str);
-        console.log(note_list);
         const workspace = document.getElementById('workspace');
         const workspace_rect = workspace.getBoundingClientRect();
         for (const entry of note_list) {
@@ -180,12 +178,20 @@ load_button.addEventListener('click', event => {
 const clear_all_button = document.getElementById('clear-all');
 clear_all_button.addEventListener('click', event => {
     localStorage.setItem('notes', '');
+    console.log("** Clearing all notes from screen and Local Storage!!");
     for (const note of notes) {
         note.remove();
     }
+    NoteBox.notes = [];
 });
 
-
+// function hypocycloid(a, b, amp, t) {
+//     const r = a - b;
+//     const p = r / b;
+//     return [
+//         1.4 * amp * r * Math.sin(t) - b * Math.sin(p * t)
+//     ]
+// };
 
 
 
