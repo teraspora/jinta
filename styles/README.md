@@ -5,6 +5,8 @@
 
 - To use it, just clone the repo and open `index.html` in your browser.
 
+![](media/jinta_screenshot.png)
+
 # TODO
 
 - Edit not working fully.
