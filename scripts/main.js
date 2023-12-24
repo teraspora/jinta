@@ -38,10 +38,10 @@ class NoteBox extends HTMLElement {
     handle_click(e) {
         NoteBox.note_elements.forEach(elem => {
             elem.style.transform = 'scale(1)';
-            elem.style.border = '3px solid #0df';
+            elem.style.border = '3px solid var(--note-border-col';
         });
         this.style.transform = 'scale(1.1)';
-        this.style.border = '3px solid var(--rich-dark-col)';
+        this.style.border = '3px solid var(--vibrant-col)';
         NoteBox.selected_note = this;
     }
 
@@ -212,6 +212,38 @@ save_button.addEventListener('click', event => {
     show_toast('toast', 'All notes saved.');
 });
 
+async function save_to_file(data) {
+    try {
+        const newHandle = await window.showSaveFilePicker();
+        const writableStream = await newHandle.createWritable();
+        await writableStream.write(data);
+        await writableStream.close();
+    }
+    catch (err) {
+        console.error(err.name, err.message);
+    }
+  }
+
+async function load_from_file() {
+    let [fileHandle] = await window.showOpenFilePicker();
+    const file = await fileHandle.getFile();
+    const reader = new FileReader();
+    reader.readAsText(file);
+    debugger;
+    reader.onloadend = _ => {
+        data = reader.result;
+    };
+    return data;
+}
+
+const save_to_file_button = document.getElementById('save-to-file');
+save_to_file_button.addEventListener('click', event => {
+    const note_list = NoteBox.notes;
+    save_to_file(JSON.stringify(note_list));
+    console.log("** All notes saved to file.");
+    show_toast('toast', 'All notes saved to file.');
+});
+
 const random_button = document.getElementById('random');
 random_button.addEventListener('click', event => {
     console.log(`** Generating ${RANDOM_COUNT} random notes...`);
@@ -234,7 +266,7 @@ random_button.addEventListener('click', event => {
     show_toast('toast', `${RANDOM_COUNT} random notes generated.`);
 });
 
-const load_button = document.getElementById('load');
+const load_button = document.getElementById('load-notes');
 load_button.addEventListener('click', event => {
     if (notes_str = localStorage.getItem('notes')) {
         console.log("** Loading notes from Local Storage...");
@@ -258,6 +290,33 @@ load_button.addEventListener('click', event => {
     else {
         console.log("No notes in Local Storage.");
         show_toast('toast', 'No notes to load from Local Storage.');
+    }
+});
+
+const load_from_file_button = document.getElementById('load-from-file');
+load_from_file_button.addEventListener('click', event => {
+    if (notes_str = load_from_file()) {
+        console.log("** Loading notes from file...");
+        const note_list = JSON.parse(notes_str);
+        const workspace = document.getElementById('workspace');
+        const workspace_rect = workspace.getBoundingClientRect();
+        for (const entry of note_list) {
+            const note = new NoteBox(entry.title, entry.items, entry.background_colour);
+            notes.push(note);
+            workspace.appendChild(note);
+            const note_rect = note.getBoundingClientRect();
+            const x0 = workspace_rect.x + 8;
+            const x1 = x0 + workspace_rect.width - note_rect.width - 8;
+            const y0 = workspace_rect.y + 8;
+            const y1 = y0 + workspace_rect.height - note_rect.height - 8;
+            note.style.left = `${rand_in_range(x0, x1)}px`;
+            note.style.top = `${rand_in_range(y0, y1)}px`;
+        }
+        show_toast('toast', `${note_list.length} notes loaded from file.`);
+    }
+    else {
+        console.log("Unable to load notes.");
+        show_toast('toast', 'Unable to load notes from file.');
     }
 });
 

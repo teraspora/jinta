@@ -14,6 +14,8 @@
     --bright-text-col: #0084ff;
     --warning-col: #ff4421;
     --rich-dark-col: #701010;
+    --vibrant-col: #ff2d5b;
+    --note-border-col: #0df;
     text-decoration: none;
 }
 
@@ -75,6 +77,10 @@ button#save-notes {
     background-color: var(--bright-text-col);
 }
 
+button#save-to-file {
+    background-color: #0f8;
+}
+
 button#random {
     background-color: #ff5ecf;
 }
@@ -83,8 +89,13 @@ button#load {
     background-color: #fa3;
 }
 
+button#load-from-file {
+    background-color: #996dff;
+    font-size: 0.7vw;
+}
+
 button#clear-all {
-    background-color: #ff2d5b;
+    background-color: var(--vibrant-col);
 }
 
 button#edit-note {
