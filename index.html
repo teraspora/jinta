@@ -24,6 +24,7 @@
                 color: #000;
                 user-select: none;
                 transition: transform 0.5s;
+                max-width: 20vw;
             }
             :host:hover {
                 transform: scale(1.1) ease-in-out;
@@ -41,15 +42,15 @@
             <hr>
             <label for="list_items">List Items</label>
             <ul id="list_items" data-max-items="6">
-                <li><input type="text" id="item_1" name="item_1" placeholder="Item 1"></li>
-                <li><input type="text" id="item_2" name="item_2" placeholder="Item 2"></li>
-                <li><input type="text" id="item_3" name="item_3" placeholder="Item 3"></li>
-                <li><input type="text" id="item_4" name="item_4" placeholder="Item 4"></li>
-                <li><input type="text" id="item_5" name="item_5" placeholder="Item 5"></li>
-                <li><input type="text" id="item_6" name="item_6" placeholder="Item 6"></li>
+                <li><input type="text" id="item_1" name="item_1"></li>
+                <li><input type="text" id="item_2" name="item_2"></li>
+                <li><input type="text" id="item_3" name="item_3"></li>
+                <li><input type="text" id="item_4" name="item_4"></li>
+                <li><input type="text" id="item_5" name="item_5"></li>
+                <li><input type="text" id="item_6" name="item_6"></li>
             </ul>
     
-            <button type="button" id="create-note">Create</button>
+            <button type="button" id="save">Save</button>
             <button type="button" id="cancel">Cancel</button>
         </form>
     </template>
@@ -67,11 +68,16 @@
         
         <section id="controls">
             <button id="new-note">New Note</button>
-            <button id="save">Save Notes</button>
+            <button id="save-notes">Save Notes</button>
             <button id="random">Random</button>
             <button id="load">Load</button>
             <button id="clear-all">Clear All</button>
-        </section> 
+            <button id="edit-note">Edit Note</button>
+            <button id="delete-note">Delete Note</button>
+        </section>
+        <div id="toast">
+            
+        </div>
 
     </main>
 

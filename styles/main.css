@@ -71,7 +71,7 @@ button#new-note {
     background-color: #00ffdd;
 }
 
-button#save {
+button#save-notes {
     background-color: var(--bright-text-col);
 }
 
@@ -87,7 +87,15 @@ button#clear-all {
     background-color: #ff2d5b;
 }
 
-button#create-note {
+button#edit-note {
+    background-color: #5df;
+}
+
+button#delete-note {
+    background-color: var(--warning-col);
+}
+
+button#save {
     display: block;
     font-size: 0.7vw;
     margin: 1em;
@@ -128,6 +136,7 @@ button#cancel {
     border: 1px solid #000;
     border-radius: 6px;
     box-sizing: border-box;
+    font-size: 1vw;
 }
 
 header {
@@ -159,4 +168,17 @@ header {
     justify-self: center;
     justify-items: stretch;
     padding: 1vw;
+}
+
+div#toast {
+    position: absolute;
+    height: 4vh;
+    color: #fda;
+    top: 1vw;
+    text-align: center;
+    font-family: monospace;
+    font-size: 0.8vw;
+    line-height: 4;
+    opacity: 0;
+    transition: opacity 2s;
 }

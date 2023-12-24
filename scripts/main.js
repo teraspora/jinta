@@ -3,6 +3,8 @@ let notes = [];
 class NoteBox extends HTMLElement {
     static z_index = 0;
     static notes = [];
+    static note_elements = [];
+    static selected_note = null;
 
     constructor(title, items, background_colour) {
         super();
@@ -25,11 +27,22 @@ class NoteBox extends HTMLElement {
         this.title_element.textContent = this.title;
         this.create_list(this.items);
         NoteBox.notes.push({title: this.title, items: this.items, background_colour: this.background_colour});
-
+        NoteBox.note_elements.push(this);
         this.addEventListener('mousedown', this.handle_mousedown.bind(this));
         document.addEventListener('mousemove', this.handle_mousemove.bind(this));
         document.addEventListener('mouseup', this.handle_mouseup.bind(this));
         this.style.transition = 'opacity 1s, transform 0.5s';
+        this.addEventListener('click', this.handle_click);
+    }
+
+    handle_click(e) {
+        NoteBox.note_elements.forEach(elem => {
+            elem.style.transform = 'scale(1)';
+            elem.style.border = '3px solid #0df';
+        });
+        this.style.transform = 'scale(1.1)';
+        this.style.border = '3px solid var(--rich-dark-col)';
+        NoteBox.selected_note = this;
     }
 
     handle_mousedown(e) {
@@ -73,6 +86,16 @@ function set_notes_opacity(opacity) {
 
 customElements.define('note-box', NoteBox);
 
+function show_toast(toast_id, text) {
+    const toast = document.getElementById(toast_id);
+    toast.innerText = text;
+    toast.style.left = `${(toast.parentElement.getBoundingClientRect().width - toast.getBoundingClientRect().width) / 2}px`;
+    toast.style.opacity = 1;
+    setTimeout(_ => {
+        toast.style.opacity = 0;
+    }, 3000);
+}
+
 
 // Button listeners
 const new_note_button = document.getElementById('new-note');
@@ -83,37 +106,40 @@ new_note_button.addEventListener('click', event => {
     div.appendChild(template.content.cloneNode(true));
     div.classList.add('form-wrapper');
     document.body.appendChild(div);
+    div.style.zIndex = ++NoteBox.z_index;
     const form = div.querySelector('form');
-    form.querySelector('#title').focus();
+    const title_field = form.querySelector('#title')
+    title_field.focus();
     const cancel_button = div.querySelector('#cancel');
-    const create_button = div.querySelector('#create-note');
-    [create_button, cancel_button].forEach(button => {
+    const save_button = div.querySelector('#save');
+    [save_button, cancel_button].forEach(button => {
         button.addEventListener('click', event => {
             switch(event.target.id) {
                 case 'cancel':
                     div.remove();
                     break;
-                case 'create-note':
-                        const data = new FormData(form);
-                        const title = data.get('title');
-                        if (NoteBox.notes.map(note => note.title).includes(title)) {
-                            alert("There's already a note with this title, so you may wish to change the title or else cancel this and edit the original note instead...");
-                            return;
-                        }
-                        const items = Array(6).fill(1).map((el, i) => data.get(`item_${i + 1}`)).filter(x => x);
-                        div.remove();
-                        const bg_colour = colours[rand_int(colour_count)];
-                        const note = new NoteBox(title, items, bg_colour);
-                        notes.push(note);
-                        workspace.appendChild(note);
-                        const workspace_rect = note.parentElement.getBoundingClientRect();
-                        const note_rect = note.getBoundingClientRect();
-                        const left = workspace_rect.left + 0.5 * (workspace_rect.width - note_rect.width);
-                        const top = workspace_rect.top + 0.5 * (workspace_rect.height - note_rect.height); 
-                        note.style.left = `${left}px`;
-                        note.style.top = `${top}px`;
-                        note.style.zIndex = ++NoteBox.z_index;
-                        break;
+                case 'save':
+                    const data = new FormData(form);
+                    const title = data.get('title');
+                    if (NoteBox.notes.map(note => note.title).includes(title)) {
+                        alert("There's already a note with this title, so you may wish to change the title, or else cancel this and edit the original note instead...");
+                        return;
+                    }
+                    const items = Array(6).fill(1).map((el, i) => data.get(`item_${i + 1}`)).filter(x => x);
+                    div.remove();
+                    const bg_colour = colours[rand_int(colour_count)];
+                    const note = new NoteBox(title, items, bg_colour);
+                    notes.push(note);
+                    workspace.appendChild(note);
+                    const workspace_rect = note.parentElement.getBoundingClientRect();
+                    const note_rect = note.getBoundingClientRect();
+                    const left = workspace_rect.left + 0.5 * (workspace_rect.width - note_rect.width);
+                    const top = workspace_rect.top + 0.5 * (workspace_rect.height - note_rect.height); 
+                    note.style.left = `${left}px`;
+                    note.style.top = `${top}px`;
+                    note.style.zIndex = ++NoteBox.z_index;
+                    show_toast('toast', `Note ${title} created.`);
+                    break;
                 default:
                     console.log(`** Something else, not a button, was clicked - event targeted: ${event.target}.`);
             }
@@ -122,11 +148,68 @@ new_note_button.addEventListener('click', event => {
     });
 });
 
-const save_button = document.getElementById('save');
+const edit_note_button = document.getElementById('edit-note');
+edit_note_button.addEventListener('click', event => {
+    const note = NoteBox.selected_note;
+    if (note === null) {
+        show_toast('toast', 'No note selected to edit.');
+        return;
+    }
+    set_notes_opacity(0.2);
+    const template = document.getElementById('note-box-form');
+    const div = document.createElement('div');
+    div.appendChild(template.content.cloneNode(true));
+    div.classList.add('form-wrapper');
+    document.body.appendChild(div);
+    div.style.zIndex = ++NoteBox.z_index;
+    const form = div.querySelector('form');
+    const title_field = form.querySelector('#title');
+    title_field.value = NoteBox.selected_note.title;
+    const items_fields = form.querySelectorAll('#list_items li input');
+    let i = 0;
+    items_fields.forEach(field => {
+        field.value = NoteBox.selected_note.items[i++] ?? '';
+    });
+    title_field.focus();
+    const cancel_button = div.querySelector('#cancel');
+    const save_button = div.querySelector('#save');
+    [save_button, cancel_button].forEach(button => {
+        button.addEventListener('click', event => {
+            switch(event.target.id) {
+                case 'cancel':
+                    div.remove();
+                    break;
+                case 'save':
+                    const data = new FormData(form);
+                    const title = data.get('title');
+                    // if (NoteBox.notes.map(note => note.title).includes(title)) {
+                    //     alert("There's already a note with this title, so you may wish to change the title or else cancel this and edit the original note instead...");
+                    //     return;
+                    // }
+                    const items = Array(6).fill(1).map((el, i) => data.get(`item_${i + 1}`)).filter(x => x);
+                    div.remove();
+                    const bg_colour = colours[rand_int(colour_count)];
+                    note.title = title;
+                    note.items = items;
+
+                    // HERE!   Note not updating, need to check logic here.
+
+                    show_toast('toast', `Note ${title} saved.`);
+                    break;
+                default:
+                    console.log(`** Something else, not a button, was clicked - event targeted: ${event.target}.`);
+            }
+            set_notes_opacity(1.0);
+        });
+    });
+});
+
+const save_button = document.getElementById('save-notes');
 save_button.addEventListener('click', event => {
     const note_list = NoteBox.notes;
     localStorage.setItem('notes', JSON.stringify(note_list));
     console.log("** All notes saved.");
+    show_toast('toast', 'All notes saved.');
 });
 
 const random_button = document.getElementById('random');
@@ -136,7 +219,7 @@ random_button.addEventListener('click', event => {
     const workspace_rect = workspace.getBoundingClientRect();
     const some_titles = Array(RANDOM_COUNT).fill(1).map(x => titles[rand_int(title_count)]);
     for (title of some_titles) {
-        const item_list = Array(rand_in_range(2, 11)).fill(0).map(item => entries[rand_int(item_count)]);
+        const item_list = Array(rand_in_range(2, 7)).fill(0).map(item => entries[rand_int(item_count)]);
         const note = new NoteBox(title, item_list, colours[rand_int(colour_count)]);
         notes.push(note);
         workspace.appendChild(note);
@@ -148,6 +231,7 @@ random_button.addEventListener('click', event => {
         note.style.left = `${rand_in_range(x0, x1)}px`;
         note.style.top = `${rand_in_range(y0, y1)}px`;
     }
+    show_toast('toast', `${RANDOM_COUNT} random notes generated.`);
 });
 
 const load_button = document.getElementById('load');
@@ -169,20 +253,38 @@ load_button.addEventListener('click', event => {
             note.style.left = `${rand_in_range(x0, x1)}px`;
             note.style.top = `${rand_in_range(y0, y1)}px`;
         }
+        show_toast('toast', `${note_list.length} notes loaded.`);
     }
     else {
         console.log("No notes in Local Storage.");
+        show_toast('toast', 'No notes to load from Local Storage.');
     }
 });
 
 const clear_all_button = document.getElementById('clear-all');
 clear_all_button.addEventListener('click', event => {
     localStorage.setItem('notes', '');
-    console.log("** Clearing all notes from screen and Local Storage!!");
+    console.log("** Clearing all notes from screen and Local Storage!");
     for (const note of notes) {
         note.remove();
     }
     NoteBox.notes = [];
+    show_toast('toast', 'All notes cleared from screen and Local Storage.');
+});
+
+const delete_button = document.getElementById('delete-note');
+delete_button.addEventListener('click', event => {
+    const note = NoteBox.selected_note;
+    if (note === null) {
+        show_toast('toast', `No note selected to delete.`);
+    }
+    else {
+        note.remove();
+        console.log(`Note ${note.title} removed!`);
+        NoteBox.selected_note = null;
+        // Need also to remove from static lists and global list
+        show_toast('toast', `Note ${note.title} removed.`);
+    }
 });
 
 // function hypocycloid(a, b, amp, t) {
