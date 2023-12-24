@@ -219,7 +219,7 @@ random_button.addEventListener('click', event => {
     const workspace_rect = workspace.getBoundingClientRect();
     const some_titles = Array(RANDOM_COUNT).fill(1).map(x => titles[rand_int(title_count)]);
     for (title of some_titles) {
-        const item_list = Array(rand_in_range(2, 7)).fill(0).map(item => entries[rand_int(item_count)]);
+        const item_list = Array(rand_in_range(2, 7)).fill(0).map(item => `${entries[rand_int(item_count)]} ${entries[rand_int(item_count)]}`);
         const note = new NoteBox(title, item_list, colours[rand_int(colour_count)]);
         notes.push(note);
         workspace.appendChild(note);

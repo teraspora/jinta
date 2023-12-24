@@ -158,15 +158,15 @@ header {
     grid-row: 2/-1;
     min-width:9vw;
     min-height: 40vw;
+    display: grid;
+    justify-items: center;
+    align-content: start;
 }
 
 
 #workspace, #controls {
     border: 6px ridge var(--accent-col);;
     border-radius: 6px;
-    align-content: center;
-    justify-self: center;
-    justify-items: stretch;
     padding: 1vw;
 }
 
