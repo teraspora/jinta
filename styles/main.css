@@ -39,7 +39,7 @@ main {
     background-color: var(--bg-dark-col);
 }
 
-#name {
+#title {
     font-weight: normal;
     border-bottom: 1px solid var(--accent-col);
     padding-top: 1.5vh;

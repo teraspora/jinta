@@ -227,12 +227,7 @@ async function save_to_file(data) {
 async function load_from_file() {
     let [fileHandle] = await window.showOpenFilePicker();
     const file = await fileHandle.getFile();
-    const reader = new FileReader();
-    reader.readAsText(file);
-    debugger;
-    reader.onloadend = _ => {
-        data = reader.result;
-    };
+    const data = await file.text();
     return data;
 }
 
@@ -294,8 +289,8 @@ load_button.addEventListener('click', event => {
 });
 
 const load_from_file_button = document.getElementById('load-from-file');
-load_from_file_button.addEventListener('click', event => {
-    if (notes_str = load_from_file()) {
+load_from_file_button.addEventListener('click', async function(event) {
+    if (notes_str = await load_from_file()) {
         console.log("** Loading notes from file...");
         const note_list = JSON.parse(notes_str);
         const workspace = document.getElementById('workspace');
