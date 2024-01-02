@@ -26,8 +26,7 @@ class NoteBox extends HTMLElement {
 
         this.title_element.textContent = this.title;
         this.create_list(this.items);
-        NoteBox.notes.push({title: this.title, items: this.items, background_colour: this.background_colour});
-        NoteBox.note_elements.push(this);
+        console.log(`** In NoteBox Constructor...\n** notes: ${NoteBox.notes.length}, note_elements: ${NoteBox.note_elements.length}`);
         this.addEventListener('mousedown', this.handle_mousedown.bind(this));
         document.addEventListener('mousemove', this.handle_mousemove.bind(this));
         document.addEventListener('mouseup', this.handle_mouseup.bind(this));
@@ -35,13 +34,31 @@ class NoteBox extends HTMLElement {
         this.addEventListener('click', this.handle_click);
     }
 
-    handle_click(e) {
+    connectedCallback() {
+        console.log('\n** In connectedCallback()...');
+        NoteBox.notes.push({title: this.title, items: this.items, background_colour: this.background_colour});
+        NoteBox.note_elements.push(this);
+        this.style.zIndex = ++NoteBox.z_index;
+        this.handle_click();
+        document.getElementById('stats').textContent = NoteBox.notes.length;
+        console.log(`** notes: ${NoteBox.notes.length}, note_elements: ${NoteBox.note_elements.length}\n`);
+    }
+
+    disconnectedCallback() {
+        console.log('\n** In disconnectedCallback()...');
+        NoteBox.note_elements = NoteBox.note_elements.filter(ne => ne != this);
+        NoteBox.notes = NoteBox.notes.filter(n => n.title != this.title);
+        document.getElementById('stats').textContent = NoteBox.notes.length;
+        console.log(`** After removal:- notes: ${NoteBox.notes.length}, note_elements: ${NoteBox.note_elements.length}\n`);
+    }
+
+    handle_click() {
         NoteBox.note_elements.forEach(elem => {
             elem.style.transform = 'scale(1)';
-            elem.style.border = '3px solid var(--note-border-col';
+            elem.style.border = '3px solid var(--note-border-col)';
         });
-        this.style.transform = 'scale(1.1)';
-        this.style.border = '3px solid var(--vibrant-col)';
+        this.style.transform = 'scale(1.14)';
+        this.style.border = '8px ridge var(--vibrant-col)';
         NoteBox.selected_note = this;
     }
 
@@ -244,9 +261,18 @@ random_button.addEventListener('click', event => {
     console.log(`** Generating ${RANDOM_COUNT} random notes...`);
     const workspace = document.getElementById('workspace');
     const workspace_rect = workspace.getBoundingClientRect();
-    const some_titles = Array(RANDOM_COUNT).fill(1).map(x => titles[rand_int(title_count)]);
+    let indices = [];
+    const some_titles = Array(RANDOM_COUNT).fill(1).map(x => {
+        let index;
+        do {
+            index = rand_int(title_count);
+        }
+        while (indices.includes(index));
+        indices.push(index);
+        return titles[index];
+    });
     for (title of some_titles) {
-        const item_list = Array(rand_in_range(2, 7)).fill(0).map(item => `${entries[rand_int(item_count)]} ${entries[rand_int(item_count)]}`);
+        const item_list = Array(rand_in_range(2, 7)).fill(0).map(item => `${entries[rand_int(item_count)]} ${entries[rand_int(item_count)]} ${Math.random() < 0.5 ? entries[rand_int(item_count)] : ''}`);
         const note = new NoteBox(title, item_list, colours[rand_int(colour_count)]);
         notes.push(note);
         workspace.appendChild(note);
@@ -333,10 +359,11 @@ delete_button.addEventListener('click', event => {
         show_toast('toast', `No note selected to delete.`);
     }
     else {
+        console.log(`\n** Before removal:- notes: ${NoteBox.notes.length}, note_elements: ${NoteBox.note_elements.length}\n`);
         note.remove();
-        console.log(`Note ${note.title} removed!`);
+        console.log(`** Note ${note.title} removed!`);
         NoteBox.selected_note = null;
-        // Need also to remove from static lists and global list
+        // Need also to remove from static lists and global list (in disconnectedCallback())
         show_toast('toast', `Note ${note.title} removed.`);
     }
 });
