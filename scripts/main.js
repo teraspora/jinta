@@ -1,10 +1,13 @@
 let notes = [];
+let show_as_table = false;
+const workspace = document.getElementById('workspace');
 
 class NoteBox extends HTMLElement {
     static z_index = 0;
     static notes = [];
     static note_elements = [];
     static selected_note = null;
+    static allow_interaction = true;
 
     constructor(title, items, background_colour) {
         super();
@@ -53,6 +56,7 @@ class NoteBox extends HTMLElement {
     }
 
     handle_click() {
+        if (!NoteBox.allow_interaction) return;
         NoteBox.note_elements.forEach(elem => {
             elem.style.transform = 'scale(1)';
             elem.style.border = '3px solid var(--note-border-col)';
@@ -63,6 +67,7 @@ class NoteBox extends HTMLElement {
     }
 
     handle_mousedown(e) {
+        if (!NoteBox.allow_interaction) return;
         this.is_dragging = true;
         const rect = this.getBoundingClientRect();
         this.offsetX = e.clientX - rect.x;
@@ -72,7 +77,7 @@ class NoteBox extends HTMLElement {
     }
 
     handle_mousemove(e) {
-        if (!this.is_dragging) return;
+        if (!this.is_dragging || !NoteBox.allow_interaction) return;
         const x = e.clientX - this.offsetX;
         const y = e.clientY - this.offsetY;
 
@@ -113,11 +118,33 @@ function show_toast(toast_id, text) {
     }, 3000);
 }
 
+function create_notes_table(notes, max_item_count) {
+    // `notes` should be an array of objects, each with the same set of keys (`title`, `items`, `background_colour`).
+    // `title` should have a string value, `items` should be an array of up to `max_item_count` strings.
+    // No validation done at present, up to the caller to pass in valid data!
+    const table = document.createElement('table');
+    table.style.border = '1px solid #000';
+    table.id = 'notes_table';
+
+    for (const note of notes) {
+        const tr = table.insertRow();
+        const td = tr.insertCell();
+        td.style.color = '#000';
+        td.style.backgroundColor = note.background_colour;
+        td.appendChild(document.createTextNode(note.title));
+        for (let i=0; i<max_item_count; i++) {
+            const td = tr.insertCell();
+            td.appendChild(document.createTextNode(note.items[i]));
+        }
+    }
+    return table;
+}
 
 // Button listeners
 const new_note_button = document.getElementById('new-note');
 new_note_button.addEventListener('click', event => {
     set_notes_opacity(0.2);
+    NoteBox.allow_interaction = false;  
     const template = document.getElementById('note-box-form');
     const div = document.createElement('div');
     div.appendChild(template.content.cloneNode(true));
@@ -161,6 +188,7 @@ new_note_button.addEventListener('click', event => {
                     console.log(`** Something else, not a button, was clicked - event targeted: ${event.target}.`);
             }
             set_notes_opacity(1.0);
+            NoteBox.allow_interaction = true;  
         });
     });
 });
@@ -319,7 +347,6 @@ load_from_file_button.addEventListener('click', async function(event) {
     if (notes_str = await load_from_file()) {
         console.log("** Loading notes from file...");
         const note_list = JSON.parse(notes_str);
-        const workspace = document.getElementById('workspace');
         const workspace_rect = workspace.getBoundingClientRect();
         for (const entry of note_list) {
             const note = new NoteBox(entry.title, entry.items, entry.background_colour);
@@ -365,6 +392,21 @@ delete_button.addEventListener('click', event => {
         NoteBox.selected_note = null;
         // Need also to remove from static lists and global list (in disconnectedCallback())
         show_toast('toast', `Note ${note.title} removed.`);
+    }
+});
+
+const toggle_table_button = document.getElementById('toggle-table');
+toggle_table_button.addEventListener('click', event => {
+    if (show_as_table = !show_as_table) {
+        set_notes_opacity(0);
+        NoteBox.allow_interaction = false;
+        const table = create_notes_table(NoteBox.notes, 6);
+        workspace.appendChild(table);
+    }
+    else {
+        set_notes_opacity(1);
+        NoteBox.allow_interaction = true;
+        workspace.querySelector('table').remove();
     }
 });
 

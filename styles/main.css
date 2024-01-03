@@ -106,6 +106,10 @@ button#delete-note {
     background-color: var(--warning-col);
 }
 
+button#toggle-table {
+    background-color: #ffd000;
+}
+
 button#save {
     display: block;
     font-size: 0.7vw;
@@ -194,9 +198,10 @@ div#toast {
     transition: opacity 2s;
 }
 
-table {
+table#notes_table {
     border-collapse: collapse;
     width: 100%;
+    color: #00ffdd;
 }
 
 th, td {
