@@ -1,6 +1,7 @@
 let notes = [];
 let show_as_table = false;
 const workspace = document.getElementById('workspace');
+const stats_counter = document.getElementById('stats');
 
 class NoteBox extends HTMLElement {
     static z_index = 0;
@@ -8,6 +9,10 @@ class NoteBox extends HTMLElement {
     static note_elements = [];
     static selected_note = null;
     static allow_interaction = true;
+
+    #emit_change_event() {
+        this.dispatchEvent(new CustomEvent('change', {detail: NoteBox.notes.length}));
+    }
 
     constructor(title, items, background_colour) {
         super();
@@ -28,13 +33,16 @@ class NoteBox extends HTMLElement {
         this.offsetY = 0;
 
         this.title_element.textContent = this.title;
+        this.style.transition = 'opacity 1s, transform 0.5s';
         this.create_list(this.items);
         console.log(`** In NoteBox Constructor...\n** notes: ${NoteBox.notes.length}, note_elements: ${NoteBox.note_elements.length}`);
         this.addEventListener('mousedown', this.handle_mousedown.bind(this));
         document.addEventListener('mousemove', this.handle_mousemove.bind(this));
         document.addEventListener('mouseup', this.handle_mouseup.bind(this));
-        this.style.transition = 'opacity 1s, transform 0.5s';
         this.addEventListener('click', this.handle_click);
+        this.addEventListener('change', event => {
+            stats_counter.textContent = NoteBox.notes.length;
+        });
     }
 
     connectedCallback() {
@@ -43,7 +51,7 @@ class NoteBox extends HTMLElement {
         NoteBox.note_elements.push(this);
         this.style.zIndex = ++NoteBox.z_index;
         this.handle_click();
-        document.getElementById('stats').textContent = NoteBox.notes.length;
+        this.#emit_change_event();
         console.log(`** notes: ${NoteBox.notes.length}, note_elements: ${NoteBox.note_elements.length}\n`);
     }
 
@@ -51,7 +59,7 @@ class NoteBox extends HTMLElement {
         console.log('\n** In disconnectedCallback()...');
         NoteBox.note_elements = NoteBox.note_elements.filter(ne => ne != this);
         NoteBox.notes = NoteBox.notes.filter(n => n.title != this.title);
-        document.getElementById('stats').textContent = NoteBox.notes.length;
+        this.#emit_change_event();
         console.log(`** After removal:- notes: ${NoteBox.notes.length}, note_elements: ${NoteBox.note_elements.length}\n`);
     }
 
@@ -134,13 +142,13 @@ function create_notes_table(notes, max_item_count) {
         td.appendChild(document.createTextNode(note.title));
         for (let i=0; i<max_item_count; i++) {
             const td = tr.insertCell();
-            td.appendChild(document.createTextNode(note.items[i]));
+            td.appendChild(document.createTextNode(note.items[i] ?? ''));
         }
     }
     return table;
 }
 
-// Button listeners
+// Buttons and their listeners
 const new_note_button = document.getElementById('new-note');
 new_note_button.addEventListener('click', event => {
     set_notes_opacity(0.2);
