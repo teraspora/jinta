@@ -27,7 +27,7 @@ body, html {
 
 main {            
     display: grid;
-    height: 96vh;
+    height: fit-content;
     grid-gap: 1vw;
     justify-items: center;
     align-items: stretch;
@@ -166,6 +166,7 @@ header {
     grid-row: 2/-1;
     min-width:81vw;
     min-height: 40vw;
+    height: fit-content;
 }
 
 #controls {

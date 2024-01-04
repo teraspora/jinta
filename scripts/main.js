@@ -1,7 +1,6 @@
 let notes = [];
 let show_as_table = false;
 const workspace = document.getElementById('workspace');
-const stats_counter = document.getElementById('stats');
 
 class NoteBox extends HTMLElement {
     static z_index = 0;
@@ -9,10 +8,7 @@ class NoteBox extends HTMLElement {
     static note_elements = [];
     static selected_note = null;
     static allow_interaction = true;
-
-    #emit_change_event() {
-        this.dispatchEvent(new CustomEvent('change', {detail: NoteBox.notes.length}));
-    }
+    static stats_counter = document.getElementById('stats');
 
     constructor(title, items, background_colour) {
         super();
@@ -26,6 +22,19 @@ class NoteBox extends HTMLElement {
         this.title_element = this.shadowRoot.getElementById('title');
         this.list_element = this.shadowRoot.getElementById('item-list');
         this.background_colour = background_colour;
+    }
+
+    #emit_change_event() {
+        this.dispatchEvent(new CustomEvent('change', {detail: NoteBox.notes.length}));
+    }
+
+    connectedCallback() {
+        console.log('\n** In connectedCallback()...');
+        NoteBox.notes.push({title: this.title, items: this.items, background_colour: this.background_colour});
+        NoteBox.note_elements.push(this);
+        this.style.zIndex = ++NoteBox.z_index;
+        this.handle_click();
+        console.log(`** notes: ${NoteBox.notes.length}, note_elements: ${NoteBox.note_elements.length}\n`);
         this.style.backgroundColor = this.background_colour; 
 
         this.is_dragging = false;
@@ -41,18 +50,9 @@ class NoteBox extends HTMLElement {
         document.addEventListener('mouseup', this.handle_mouseup.bind(this));
         this.addEventListener('click', this.handle_click);
         this.addEventListener('change', event => {
-            stats_counter.textContent = NoteBox.notes.length;
+            NoteBox.stats_counter.textContent = NoteBox.notes.length;
         });
-    }
-
-    connectedCallback() {
-        console.log('\n** In connectedCallback()...');
-        NoteBox.notes.push({title: this.title, items: this.items, background_colour: this.background_colour});
-        NoteBox.note_elements.push(this);
-        this.style.zIndex = ++NoteBox.z_index;
-        this.handle_click();
         this.#emit_change_event();
-        console.log(`** notes: ${NoteBox.notes.length}, note_elements: ${NoteBox.note_elements.length}\n`);
     }
 
     disconnectedCallback() {
@@ -407,12 +407,18 @@ const toggle_table_button = document.getElementById('toggle-table');
 toggle_table_button.addEventListener('click', event => {
     if (show_as_table = !show_as_table) {
         set_notes_opacity(0);
+        [...document.querySelectorAll('section#controls>button')].filter(button => button.id != 'toggle-table').forEach(button => {
+            button.disabled = true;
+        });
         NoteBox.allow_interaction = false;
         const table = create_notes_table(NoteBox.notes, 6);
         workspace.appendChild(table);
     }
     else {
         set_notes_opacity(1);
+        [...document.querySelectorAll('section#controls>button')].filter(button => button.id != 'toggle-table').forEach(button => {
+            button.removeAttribute('disabled');
+        });
         NoteBox.allow_interaction = true;
         workspace.querySelector('table').remove();
     }
